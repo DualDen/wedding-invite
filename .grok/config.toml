@@ -1,0 +1,6 @@
+# Project-scoped MCP servers for wedding-invite
+# Figma: pull design context / frames into agent workflows
+
+[mcp_servers.figma]
+url = "https://mcp.figma.com/mcp"
+enabled = true
