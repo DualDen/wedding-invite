@@ -1,0 +1,526 @@
+/* ── Scene ─────────────────────────────────────────── */
+
+.scene {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 38%, #3f4c3c 0%, transparent 58%),
+    radial-gradient(ellipse 100% 80% at 50% 100%, #1a1510 0%, transparent 52%),
+    linear-gradient(165deg, #2a3228 0%, #1c1a16 45%, #0e0c0a 100%);
+  color: #f5f0e6;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  isolation: isolate;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+  background: radial-gradient(
+    ellipse 70% 65% at 50% 45%,
+    transparent 35%,
+    rgba(8, 6, 4, 0.55) 100%
+  );
+}
+
+.bg-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(200, 175, 110, 0.16) 0%, transparent 42%),
+    radial-gradient(circle at 28% 72%, rgba(90, 110, 70, 0.1) 0%, transparent 36%),
+    radial-gradient(circle at 72% 30%, rgba(160, 140, 90, 0.08) 0%, transparent 30%);
+}
+
+/* ── Floating dust ─────────────────────────────────── */
+
+.dust-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.dust {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f5e6c0 0%, rgba(220, 190, 120, 0.2) 70%, transparent 100%);
+  box-shadow: 0 0 6px rgba(240, 210, 140, 0.45);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.dust:nth-child(3n) {
+  width: 2px;
+  height: 2px;
+}
+.dust:nth-child(5n) {
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #d4e0c0 0%, transparent 70%);
+}
+
+/* ── Stage ─────────────────────────────────────────── */
+
+.stage {
+  --env-w: min(88vw, 380px);
+  --env-h: calc(var(--env-w) * 0.7);
+  --paper: #efe6d6;
+  --paper-2: #e4d8c4;
+  --paper-3: #d4c5ad;
+  --paper-edge: rgba(110, 90, 60, 0.18);
+  --paper-hi: rgba(255, 255, 255, 0.45);
+
+  position: relative;
+  width: var(--env-w);
+  height: calc(var(--env-h) * 1.75);
+  display: grid;
+  place-items: center;
+  perspective: 1400px;
+  perspective-origin: 50% 45%;
+  z-index: 5;
+}
+
+/* ── Envelope rig ──────────────────────────────────── */
+
+.envelope-rig {
+  position: relative;
+  width: var(--env-w);
+  height: var(--env-h);
+  transform-style: preserve-3d;
+  will-change: transform, filter, opacity;
+  filter: drop-shadow(0 28px 40px rgba(0, 0, 0, 0.45));
+}
+
+/* Clips letter while it's inside the pocket — lid/seal stay free */
+.letter-slot {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.light-burst {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 140%;
+  height: 140%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 15;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 240, 200, 0.55) 0%,
+    rgba(200, 180, 120, 0.15) 35%,
+    transparent 68%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* ── Back ──────────────────────────────────────────── */
+
+.env-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(160deg, #f2e9db 0%, var(--paper-2) 55%, var(--paper-3) 100%);
+  box-shadow: inset 0 0 0 1px var(--paper-edge);
+  z-index: 1;
+  will-change: transform, opacity;
+}
+
+/* ── Letter ────────────────────────────────────────── */
+
+.letter {
+  position: absolute;
+  /* Sized to sit inside the envelope; overflow on slot clips the rest */
+  left: 6%;
+  right: 6%;
+  top: 8%;
+  height: 84%;
+  z-index: 3;
+  transform-origin: center bottom;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.is-done .letter {
+  pointer-events: auto;
+}
+
+.letter-inner {
+  height: 100%;
+  box-sizing: border-box;
+  padding: clamp(1.25rem, 4.5vw, 2rem) clamp(1.1rem, 4vw, 1.65rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.35rem;
+  background: linear-gradient(180deg, #fffdf9 0%, #f8f1e6 50%, #f0e6d4 100%);
+  border-radius: 4px;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.28),
+    0 2px 0 rgba(255, 255, 255, 0.75) inset,
+    0 0 0 1px rgba(140, 120, 90, 0.14);
+  color: #3a342c;
+  will-change: transform, box-shadow;
+}
+
+.letter-ornament {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #6b7a5a;
+  opacity: 0.9;
+}
+
+.letter-ornament.bottom {
+  margin-top: 0.45rem;
+}
+
+.letter-kicker {
+  margin: 0.15rem 0 0;
+  font-size: clamp(0.7rem, 2.2vw, 0.85rem);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #7a6f5f;
+  font-weight: 500;
+}
+
+.letter-names {
+  margin: 0.35rem 0 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(1.55rem, 6vw, 2.2rem);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: #2c2822;
+}
+
+.letter-names span {
+  display: inline-block;
+  margin: 0 0.2em;
+  font-style: italic;
+  color: #5f6b4f;
+  font-size: 0.85em;
+}
+
+.letter-divider {
+  width: 42%;
+  height: 1px;
+  margin: 0.7rem 0 0.55rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #a8b090 20%,
+    #8a9870 50%,
+    #a8b090 80%,
+    transparent
+  );
+}
+
+.letter-text {
+  margin: 0;
+  font-size: clamp(0.8rem, 2.5vw, 0.98rem);
+  line-height: 1.55;
+  color: #5a5248;
+  max-width: 22em;
+}
+
+.letter-date {
+  margin: 0.8rem 0 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4a5540;
+}
+
+/* ── Front pocket ──────────────────────────────────── */
+
+.env-front {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: 10px;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.env-panel {
+  position: absolute;
+}
+
+.env-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56%;
+  border-radius: 0 0 10px 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, transparent 38%),
+    linear-gradient(160deg, #ebe1d0 0%, #ddd0ba 100%);
+  box-shadow:
+    0 -1px 0 var(--paper-hi),
+    inset 0 0 0 1px var(--paper-edge);
+  z-index: 3;
+}
+
+.env-left,
+.env-right {
+  top: 0;
+  width: 56%;
+  height: 74%;
+  z-index: 2;
+}
+
+.env-left {
+  left: 0;
+  clip-path: polygon(0 0, 100% 55%, 0 100%);
+  background: linear-gradient(125deg, #f0e6d6 0%, #dccfba 72%, #cfc0a8 100%);
+}
+
+.env-right {
+  right: 0;
+  clip-path: polygon(0 55%, 100% 0, 100% 100%);
+  background: linear-gradient(235deg, #efe4d2 0%, #d8c9b2 72%, #c9b89e 100%);
+}
+
+/* ── Lid ───────────────────────────────────────────── */
+
+.env-lid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 48%;
+  z-index: 8;
+  transform-origin: 50% 0%;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 4px 6px rgba(60, 40, 20, 0.12));
+}
+
+.lid-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 6%, 52% 98%, 48% 98%, 0% 6%);
+}
+
+.lid-outside {
+  background: linear-gradient(
+    180deg,
+    #f7f0e5 0%,
+    #ebe0ce 38%,
+    #ddcfb8 72%,
+    #d0c0a6 100%
+  );
+  box-shadow: inset 0 0 0 1px rgba(120, 100, 70, 0.1);
+}
+
+.lid-outside::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(150deg, transparent 48%, rgba(255, 255, 255, 0.38) 50.5%, transparent 53%),
+    linear-gradient(-150deg, transparent 48%, rgba(255, 255, 255, 0.3) 50.5%, transparent 53%);
+  clip-path: inherit;
+  pointer-events: none;
+}
+
+.lid-outside::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    transparent 42%,
+    rgba(90, 70, 40, 0.14) 100%
+  );
+  clip-path: inherit;
+  pointer-events: none;
+}
+
+.lid-inside {
+  transform: rotateX(180deg);
+  background: linear-gradient(180deg, #efe4d2 0%, #e0d2bc 40%, #d2c2aa 100%);
+  box-shadow: inset 0 6px 16px rgba(80, 60, 40, 0.1);
+}
+
+/* ── Seal ──────────────────────────────────────────── */
+
+.seal {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: clamp(78px, 24vw, 104px);
+  height: clamp(78px, 24vw, 104px);
+  transform: translate(-50%, -40%);
+  z-index: 12;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.38));
+  will-change: transform, opacity;
+}
+
+.seal-flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 120%;
+  height: 120%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 245, 210, 0.95) 0%,
+    rgba(210, 190, 120, 0.35) 40%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 5;
+}
+
+.seal-half {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+
+.seal-half img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+.seal-left {
+  clip-path: polygon(0 0, 52% 0, 48% 100%, 0 100%);
+}
+
+.seal-right {
+  clip-path: polygon(52% 0, 100% 0, 100% 100%, 48% 100%);
+}
+
+.seal-crack {
+  position: absolute;
+  left: 48%;
+  top: 10%;
+  width: 2px;
+  height: 80%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(20, 15, 10, 0.55) 20%,
+    rgba(15, 10, 5, 0.7) 50%,
+    rgba(20, 15, 10, 0.55) 80%,
+    transparent
+  );
+  transform: rotate(-5deg);
+  transform-origin: center;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.spark-origin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.spark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff6d0 0%, #c8a84a 55%, transparent 75%);
+  box-shadow: 0 0 8px rgba(255, 220, 140, 0.8);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.spark:nth-child(odd) {
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  background: radial-gradient(circle, #e8f0d8 0%, #8a9a60 60%, transparent 75%);
+}
+
+.spark:nth-child(4n) {
+  width: 7px;
+  height: 2px;
+  margin: -1px 0 0 -3.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #f0e0a8, transparent);
+}
+
+/* ── Hint ──────────────────────────────────────────── */
+
+.hint {
+  position: absolute;
+  bottom: max(1.75rem, env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  margin: 0;
+  z-index: 40;
+  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 230, 0.55);
+  animation: hint-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint {
+    animation: none;
+  }
+}
